@@ -2,20 +2,19 @@ import time
 
 username = "TEST"
 filesystem = {
-    "home": {
-        username: {
-            "Documents":{},
-            "Games":{
-                "InsideGames":{}
-            },
-        },   
-    }
+    username: {
+        "Documents":{},
+        "Games":{
+            "InsideGames":{}
+        },
+    },   
 }
 
 
+
 CurrentDir = "~"
-current_folder = filesystem["home"]
-path = ["home"]
+current_folder = filesystem[username]
+path = [username]
 
 
 print(r"""   ___       __ _          _ _ 
@@ -36,20 +35,21 @@ def cd(cdPath):
     temp_folder = filesystem
     valid = True
 
+    # rebuild temp_folder from current path
     for p in temp_path:
         temp_folder = temp_folder[p]
 
     for part in parts:
         if part == "..":
-            if len(temp_path) > 1: 
+            if len(temp_path) > 1:  # stay inside user's home
                 temp_path.pop()
                 temp_folder = filesystem
                 for p in temp_path:
                     temp_folder = temp_folder[p]
             else:
-
-                temp_path = ["home"]
-                temp_folder = filesystem["home"]
+                # already at ~ (username root)
+                temp_path = [username]
+                temp_folder = filesystem[username]
         elif part in temp_folder and isinstance(temp_folder[part], dict):
             temp_folder = temp_folder[part]
             temp_path.append(part)
@@ -62,7 +62,11 @@ def cd(cdPath):
         current_folder = temp_folder
         path = temp_path
 
-    CurrentDir = "~/" + "/".join(path)
+    # build CurrentDir like bash (~ instead of showing username)
+    if path == [username]:
+        CurrentDir = "~"
+    else:
+        CurrentDir = "~/" + "/".join(path[1:])
 
 
 def clear():
@@ -96,14 +100,28 @@ def ls():
     if not current_folder:
         print("(empty)")
     else:
-        for name in current_folder:
-            print(name, end=" ")
+        for name, item in current_folder.items():
+            if isinstance(item, dict):
+                print(name + "/", end=" ")
+            else:
+                print(name, end=" ")
         print()
+
+def touch(filename):
+    if not filename:
+        print("touch: missing file operand")
+    if filename not in current_folder:
+        current_folder[filename] = ""
+    else:
+        print("touch: cannot create directory: File exists")
 
 
 
 def pwd():
-    print("~/" + "/".join(path))
+    if path == [username]:
+        print("~/ (User Folder)")
+    else:
+        print("~/" + "/".join(path[1:]))
 
 def test():
     global current_folder, path, CurrentDir
@@ -126,7 +144,8 @@ commands = {
     "test": lambda args: test(),
     "echo": lambda args: echo(args),   
     "cd": lambda args: cd(args),   
-    "mkdir": lambda args: mkdir(args),   
+    "mkdir": lambda args: mkdir(args),  
+    "touch": lambda args: touch(args),   
     "config": lambda args: config(), 
     "ls": lambda args: ls(), 
 }
@@ -134,7 +153,10 @@ commands = {
 
 
 while True:
-    CurrentDir = "~/" + "/".join(path)
+    if path == [username]:
+        CurrentDir = "~ "
+    else:
+        CurrentDir = "~/" + "/".join(path[1:])
     UserEntry = input(CurrentDir + "> ").strip()
     if not UserEntry:
         continue
