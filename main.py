@@ -87,7 +87,19 @@ def help_cmd():
         print(" -", cmd)
 
 def mkdir(name):
-    #TODO: Do the mkdir function
+    if name not in current_folder:
+        current_folder[name] = {}
+    else:
+        print("mkdir: cannot create directory: File exists")
+
+def ls():
+    if not current_folder:
+        print("(empty)")
+    else:
+        for name in current_folder:
+            print(name, end=" ")
+        print()
+
 
 
 def pwd():
@@ -112,9 +124,11 @@ commands = {
     "exit": lambda args: exitPS(),
     "pwd": lambda args: pwd(),
     "test": lambda args: test(),
-    "echo": lambda args: echo(args),  # args = texte à afficher
-    "cd": lambda args: cd(args),  # args = texte à afficher
+    "echo": lambda args: echo(args),   
+    "cd": lambda args: cd(args),   
+    "mkdir": lambda args: mkdir(args),   
     "config": lambda args: config(), 
+    "ls": lambda args: ls(), 
 }
 
 
