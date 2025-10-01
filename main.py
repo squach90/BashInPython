@@ -96,16 +96,38 @@ def mkdir(name):
     else:
         print("mkdir: cannot create directory: File exists")
 
-def ls():
-    if not current_folder:
+def ls(directory=None):
+    global current_folder, path
+    
+    # case: ls with a path like "Games" or "Games/InsideGames"
+    if directory:
+        parts = directory.split("/")
+        temp_folder = current_folder
+        valid = True
+        for part in parts:
+            if part in temp_folder and isinstance(temp_folder[part], dict):
+                temp_folder = temp_folder[part]
+            else:
+                print("pyshell: ls: cannot access" + directory + ": No such file or directory")
+                valid = False
+                break
+        if not valid:
+            return
+    else:
+        # no argument: use current folder
+        temp_folder = current_folder
+    
+    # list contents
+    if not temp_folder:
         print("(empty)")
     else:
-        for name, item in current_folder.items():
+        for name, item in temp_folder.items():
             if isinstance(item, dict):
                 print(name + "/", end=" ")
             else:
                 print(name, end=" ")
         print()
+
 
 def touch(filename):
     if not filename:
@@ -147,7 +169,7 @@ commands = {
     "mkdir": lambda args: mkdir(args),  
     "touch": lambda args: touch(args),   
     "config": lambda args: config(), 
-    "ls": lambda args: ls(), 
+    "ls": lambda args: ls(args), 
 }
 
 
