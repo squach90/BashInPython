@@ -27,18 +27,29 @@ print(r"""   ___       __ _          _ _
       """)
 
 def cd(cdPath):
-    global current_folder, CurrentDir
-    if cdPath == ".." and len(path) > 1:
-        path.pop()
-        current_folder = filesystem["home"][path[0]]
-        for p in path[1:]:
-            current_folder = current_folder[p]
-    elif cdPath in current_folder and isinstance(current_folder[cdPath], dict):
-        # le dossier existe, on y va
-        path.append(cdPath)
-        current_folder = current_folder[cdPath]
+    global current_folder, path, CurrentDir
+
+    if cdPath == "..":
+        # Remonter d'un dossier si possible
+        if len(path) > 1:
+            path.pop()
+            # reconstruire current_folder depuis filesystem et path
+            current_folder = filesystem["home"][path[0]]
+            for p in path[1:]:
+                current_folder = current_folder[p]
+        else:
+            print("Déjà à la racine !")
     else:
-        print("Dossier inconnu :", cdPath)
+        # Vérifier que le dossier existe dans le dossier courant
+        if cdPath in current_folder and isinstance(current_folder[cdPath], dict):
+            path.append(cdPath)
+            current_folder = current_folder[cdPath]
+        else:
+            print("pyshell: cd: " + cdPath + ": No such file or directory",)
+
+    # Mettre à jour le prompt
+    CurrentDir = "~/" + "/".join(path)
+
 
 def clear():
     print("\n" * 100)
@@ -67,13 +78,15 @@ def pwd():
 
 def test():
     global current_folder, path, CurrentDir
-    if "Games" in filesystem["home"] and isinstance(filesystem["home"]["Games"], dict):
+    # Vérifier que "Games" existe dans le dossier de l'utilisateur
+    if "Games" in filesystem["home"][username] and isinstance(filesystem["home"][username]["Games"], dict):
         current_folder = filesystem["home"][username]["Games"]
-        path = ["Games"]
+        path = [username, "Games"]  # inclure l'utilisateur dans le chemin
         CurrentDir = "~/" + "/".join(path)
-        print("Dossier 'Games' ouvert !")
+        print("Dossier " + CurrentDir + " ouvert !")
     else:
-        print("Le dossier 'Games' n'existe pas !")
+        print("Le dossier 'Games' n'existe pas !") 
+
 
 # Dictionnaire des commandes
 commands = {
