@@ -10,7 +10,8 @@ filesystem = {
     },   
 }
 
-
+# TODO: Can write in file
+# TODO Command: cat, echo > filename
 
 CurrentDir = "~"
 current_folder = filesystem[username]
