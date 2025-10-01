@@ -5,7 +5,9 @@ filesystem = {
     "home": {
         username: {
             "Documents":{},
-            "Games":{},
+            "Games":{
+                "InsideGames":{}
+            },
         },   
     }
 }
@@ -29,25 +31,37 @@ print(r"""   ___       __ _          _ _
 def cd(cdPath):
     global current_folder, path, CurrentDir
 
-    if cdPath == "..":
-        # Remonter d'un dossier si possible
-        if len(path) > 1:
-            path.pop()
-            # reconstruire current_folder depuis filesystem et path
-            current_folder = filesystem["home"][path[0]]
-            for p in path[1:]:
-                current_folder = current_folder[p]
-        else:
-            print("Déjà à la racine !")
-    else:
-        # Vérifier que le dossier existe dans le dossier courant
-        if cdPath in current_folder and isinstance(current_folder[cdPath], dict):
-            path.append(cdPath)
-            current_folder = current_folder[cdPath]
+    parts = cdPath.split("/")
+    temp_path = path.copy()
+    temp_folder = filesystem
+    valid = True
+
+    for p in temp_path:
+        temp_folder = temp_folder[p]
+
+    for part in parts:
+        if part == "..":
+            if len(temp_path) > 1: 
+                temp_path.pop()
+                temp_folder = filesystem
+                for p in temp_path:
+                    temp_folder = temp_folder[p]
+            else:
+
+                temp_path = ["home"]
+                temp_folder = filesystem["home"]
+        elif part in temp_folder and isinstance(temp_folder[part], dict):
+            temp_folder = temp_folder[part]
+            temp_path.append(part)
         else:
             print("pyshell: cd: " + cdPath + ": No such file or directory",)
+            valid = False
+            break
 
-    # Mettre à jour le prompt
+    if valid:
+        current_folder = temp_folder
+        path = temp_path
+
     CurrentDir = "~/" + "/".join(path)
 
 
