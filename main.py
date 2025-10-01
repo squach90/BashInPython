@@ -86,9 +86,15 @@ def exitPS():
     print("(U can close the program)")
 
 def help_cmd():
-    print("Commandes disponibles:")
-    for cmd in commands:
+    cmds = list(commands.keys())
+    print("Commandes disponibles (tape Entrée pour continuer, 'q' pour quitter):")
+    
+    for i, cmd in enumerate(cmds, 1):
         print(" -", cmd)
+        if i % 10 == 0 and i != len(cmds):  # pause every 10 commands
+            user_input = input("-- more -- ")
+            if user_input.lower() == "q":
+                break
 
 def mkdir(name):
     if name not in current_folder:
