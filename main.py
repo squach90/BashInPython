@@ -86,6 +86,9 @@ def help_cmd():
     for cmd in commands:
         print(" -", cmd)
 
+def mkdir(name):
+    #TODO: Do the mkdir function
+
 
 def pwd():
     print("~/" + "/".join(path))
