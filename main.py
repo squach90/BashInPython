@@ -13,6 +13,7 @@ filesystem = {
 CurrentDir = "~"
 current_folder = filesystem[username]
 path = [username]
+versionVar = "pyshell-0.0.2"
 
 print(r"""   ___       __ _          _ _ 
   / _ \_   _/ _\ |__   ___| | |
@@ -154,6 +155,9 @@ def pwd():
     else:
         print("~/" + "/".join(path[1:]))
 
+def version():
+    print(versionVar)
+
 
 # ------------- Command dictionary -----------------
 
@@ -162,6 +166,7 @@ commands = {
     "help": lambda args, ro=False: help_cmd(),
     "exit": lambda args, ro=False: exitPS(),
     "pwd": lambda args, ro=False: pwd(),
+    "version": lambda args, ro=False: version(),
     "echo": lambda args, ro=False: echo(args, ro),
     "cd": lambda args, ro=False: cd(args),
     "mkdir": lambda args, ro=False: mkdir(args),
