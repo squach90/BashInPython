@@ -158,6 +158,9 @@ def pwd():
 def version():
     print(versionVar)
 
+def whoami():
+    print(username)
+
 
 # ------------- Command dictionary -----------------
 
@@ -166,6 +169,7 @@ commands = {
     "help": lambda args, ro=False: help_cmd(),
     "exit": lambda args, ro=False: exitPS(),
     "pwd": lambda args, ro=False: pwd(),
+    "whoami": lambda args, ro=False: whoami(),
     "version": lambda args, ro=False: version(),
     "echo": lambda args, ro=False: echo(args, ro),
     "cd": lambda args, ro=False: cd(args),
